@@ -1,0 +1,78 @@
+        lda #160
+        ldx #0
+
+row1    sta $07C0,x
+        inx
+        cpx #40
+        bne row1
+
+        ldx #0
+row2    sta $0798,x
+        inx
+        cpx #40
+        bne row2
+
+        ldx #0
+row3    sta $770,x
+        inx
+        cpx #20
+        bne row3
+
+        ldx #0
+row4    sta $748,x
+        inx
+        cpx #19
+        bne row4
+
+
+        ldx #0
+row5    sta $720,x
+        inx
+        cpx #17
+        bne row5
+
+        ldx #0
+row6    sta $6F8,x
+        inx
+        cpx #15
+        bne row6
+
+        
+        lda #9
+        ldx #0
+
+        ldx #0
+row1c   sta $DBC0,x
+        inx
+        cpx #40
+        bne row1c
+        
+        ldx #0
+row2c   sta $DB98,x
+        inx
+        cpx #40
+        bne row2c     
+
+        ldx #0
+row3c   sta $DB70,x
+        inx
+        cpx #20
+        bne row3c     
+
+        ldx #0
+row4c   sta $DB48,x
+        inx
+        cpx #19
+        bne row4c     
+
+        ldx #0
+row5c   sta $DB20,x
+        inx
+        cpx #17
+        bne row5c     
+
+        ldx #0
+row6c   sta $DAF8,x
+        inx
+        cpx #15
+        bne row6c 
