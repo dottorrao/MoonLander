@@ -1,0 +1,14 @@
+>> Border color, blackgound color,write a text in to screen:
+https://8bitheaven.home.blog/2020/01/07/c64-assembly-hello-world/
+
+>> Memory map
+https://sta.c64.org/cbm64mem.html
+
+>> Varie interessanti
+https://www.chibiakumas.com/6502/helloworld.php#LessonH2
+
+>> Routine cancellazione schermo
+https://bigcode.wordpress.com/2016/10/29/assmbly-language-hello-world-in-color-using-direct-writes-to-screen-ram-for-the-commodoare-64/
+
+>> Sintesi grafica
+https://www.chibiakumas.com/6502/c64.php?noui=1

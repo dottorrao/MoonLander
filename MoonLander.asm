@@ -1,18 +1,30 @@
 *=$c000
 
+
 ; ###########################################
 ; INITIALIZATION OF ALL VARIABLES WITH VALUE 0
 ; ###########################################
 
-init    lda #0
-        sta ax ; accelerazione low
+init    
+        ;jsr $e544      ; clean screen
+        lda #0
+        sta ax          ; accelerazione low
         sta ay  
-        sta vx ; velocità low-high
+        sta vx          ; velocità low-high
         sta vx+1
         sta vy  
         sta vy+1
-        sta pxL ; posizione low
+        sta pxL         ; posizione low
         sta pyL
+
+        ;lda #%00000111  ; %00000111 = brown
+        ;sta $d020       ; border color set to brown
+        lda #%00000000  ; %00000000 = black
+        sta $d021       ; backgoud color set to black    
+        lda #1          ; $00 = white
+        sta $0286       ; text color set to write
+        
+        
 
 
 ; ##############################################################################
@@ -108,7 +120,7 @@ row6c   sta $DAF8,x
 ; ###########################################
 
   
-start   lda #$ff ; 255 = %11111111 ;>> Trick to make the program more slow.
+main    lda #$ff ; 255 = %11111111 ;>> Trick to make the program more slow.
 wait    cmp $d012                  ;  wait until that raster is at row 255      
         bne wait                   ;  $d012 contains the number of screen row that 
                                    ;  raster is drowing
@@ -136,17 +148,34 @@ wait    cmp $d012                  ;  wait until that raster is at row 255
         sta $D00A       ;
         lda $d001
         sta $D00B
-        jmp exit
+        ldx #0
+drawCr  lda cr_msg,x    ; diaply message for crash
+        sta $05F1,x
+        lda #1
+        sta $D9F1,x
+        inx
+        cpx #8
+        bne drawCr
+        jmp exit         ; game end!
 
         ; ###########################################
         ; collision management between lander and platform
         ; $d01e 
         ; Bit #x: 1 = Sprite #x collided with another sprite.
         ; ###########################################
-cont01  lda #%00010000  
+cont01  lda #%0010000  
         bit $d01e
         beq cont02
-        inc $d021
+        ldx #0
+drawOK  lda ok_msg,x    ; diaply message for landing
+        sta $05F1,x
+        ;lda #1
+        ;sta $D9F1,x
+        ;inx
+        ;cpx #7
+        ;bne drawOk
+        ;jmp exit         ; game end!
+        
 
 cont02  lda #%00000001 ; mask joystick up movement 
         bit $dc00      ; bitwise AND with address 56320
@@ -229,7 +258,7 @@ miy2    adc vy+1
         lda #%00010000 ; mask joystick button push 
         bit $dc00      ; bitwise AND with address 56320
         beq exit       ; button pressed -> exit
-        jmp start
+        jmp main
 exit    rts            ; back to basic
 
 ax      byte 0
@@ -240,3 +269,5 @@ vy      byte 0
         byte 0
 pxL     byte 0
 pyL     byte 0
+cr_msg  byte 3,18,1,19,8,5,4,33,33 ; CRASHED!!
+ok_msg  byte 12,1,14,4,5,4,33,3 ; LANDED!!
