@@ -6,21 +6,6 @@ f*=$c000
 ; ###########################################
 
 init    
-        
-        lda #%00010001  ; make visible only lander and platform sprite
-        sta $D015
-
-        lda #44         ; position of lander
-        sta $d000
-        lda #120
-        sta $d001
-        
-        lda #150         ; position of platform
-        sta $d008
-        lda #165
-        sta $d009
-        
-
         ;jsr $e544      ; clean screen
         lda #0
         sta ax          ; accelerazione low
@@ -177,18 +162,17 @@ drawCr  lda cr_msg,x    ; diaply message for crash
         ; $d01e 
         ; Bit #x: 1 = Sprite #x collided with another sprite.
         ; ###########################################
-cont01  lda #%00000001  
+cont01  lda #%00010000  
         bit $d01e
         beq cont02
-        jmp landed
-
-landed  ldx #0
+        inc $d020
+        ldx #0
 drawOK  lda ld_msg,x    ; diaply message for landing
         sta $05F1,x     ; STRANGE BEHAVIOUR HERE!!! SEEMS THAT OLWAYS COLLISION
         lda #1          ; IS PRESENT. WHY???
         sta $D9F1,x
         inx
-        cpx #6
+        cpx #2
         bne drawOk
         jmp exit      ; game end!
 

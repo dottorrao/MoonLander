@@ -1,0 +1,174 @@
+00001  0000             *=$C000
+00002  C000             
+00003  C000  A9 00      INIT       LDA #0
+00004  C002  8D 10 C1              STA AX ; ACCELERAZIONE LOW
+00005  C005  8D 11 C1              STA AY
+00006  C008  8D 12 C1              STA VX ; VELOCITÀ LOW-HIGH
+00007  C00B  8D 13 C1              STA VX+1
+00008  C00E  8D 14 C1              STA VY
+00009  C011  8D 15 C1              STA VY+1
+00010  C014  8D 16 C1              STA PXL ; POSIZIONE LOW
+00011  C017  8D 17 C1              STA PYL
+00012  C01A             
+00013  C01A             ; @                 
+00014  C01A  A9 14                 LDA #20
+00015  C01C  8D 18 C1              STA OFFS
+00016  C01F  A5 41      ROW        LDA $41
+00017  C021  8D 00 04              STA $0400;+OFFS
+00018  C024                        ;LDA #0
+00019  C024                        ;STA $D800;+OFFS
+00020  C024  CE 18 C1              DEC OFFS
+00021  C027  AD 18 C1              LDA OFFS
+00022  C02A  C9 00                 CMP #0
+00023  C02C  D0 F1                 BNE ROW
+00024  C02E             ; @                 
+00025  C02E                        
+00026  C02E  A9 FF      START      LDA #$FF ; 255 = %11111111
+00027  C030  CD 12 D0   WAIT       CMP $D012
+00028  C033  D0 FB                 BNE WAIT
+00029  C035             
+00030  C035  A9 11                 LDA #%00010001
+00031  C037  8D 15 D0              STA $D015
+00032  C03A             
+00033  C03A  A9 00                 LDA #0
+00034  C03C  8D 10 C1              STA AX
+00035  C03F  A9 01                 LDA #1
+00036  C041  8D 11 C1              STA AY
+00037  C044             
+00038  C044  A9 01                 LDA #%00000001  ; COLLISIONE LANDER-SFONDO
+00039  C046  2C 1F D0              BIT $D01F
+00040  C049  F0 03                 BEQ CONT01
+00041  C04B  EE 20 D0              INC $D020
+00042  C04E             
+00043  C04E  A9 08      CONT01     LDA #%00001000  ; COLLISIONE LANDER-PIATTAFORMA
+00044  C050  2C 1E D0              BIT $D01E
+00045  C053  F0 03                 BEQ CONT02
+00046  C055  EE 21 D0              INC $D021
+00047  C058             
+00048  C058  A9 01      CONT02     LDA #%00000001 ; MASK JOYSTICK UP MOVEMENT
+00049  C05A  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
+00050  C05D  D0 0A                 BNE CONT1      ; NO THRUST UP
+00051  C05F  A9 13                 LDA #%00010011
+00052  C061  8D 15 D0              STA $D015
+00053  C064  A9 FC                 LDA #-4
+00054  C066  8D 11 C1              STA AY
+00055  C069             
+00056  C069  A9 02      CONT1      LDA #%00000010 ; MASK JOYSTICK DOWN MOVEMENT
+00057  C06B  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
+00058  C06E  D0 05                 BNE CONT2      ; NO THRUST DOWN
+00059  C070  A9 02                 LDA #2
+00060  C072  8D 11 C1              STA AY
+00061  C075             
+00062  C075  A9 04      CONT2      LDA #%00000100 ; MASK JOYSTICK LEFT MOVEMENT
+00063  C077  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
+00064  C07A  D0 0A                 BNE CONT3      ; NO THRUST LEFT
+00065  C07C  A9 19                 LDA #%00011001
+00066  C07E  8D 15 D0              STA $D015
+00067  C081  A9 FF                 LDA #-1
+00068  C083  8D 10 C1              STA AX
+00069  C086             
+00070  C086  A9 08      CONT3      LDA #%00001000 ; MASK JOYSTICK RIGHT MOVEMENT
+00071  C088  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
+00072  C08B  D0 0A                 BNE CONT4      ; NO THRUST RIGHT
+00073  C08D  A9 15                 LDA #%00010101
+00074  C08F  8D 15 D0              STA $D015
+00075  C092  A9 01                 LDA #1
+00076  C094  8D 10 C1              STA AX
+00077  C097             
+00078  C097  18         CONT4      CLC
+00079  C098  AD 12 C1              LDA VX  ; VX = VX + AX * DT
+00080  C09B  6D 10 C1              ADC AX
+00081  C09E  8D 12 C1              STA VX
+00082  C0A1  2C 10 C1              BIT AX
+00083  C0A4  30 04                 BMI MIX
+00084  C0A6  A9 00                 LDA #0
+00085  C0A8  10 02                 BPL MIX2
+00086  C0AA  A9 FF      MIX        LDA #255
+00087  C0AC  6D 13 C1   MIX2       ADC VX+1
+00088  C0AF  8D 13 C1              STA VX+1
+00089  C0B2             
+00090  C0B2  18                    CLC
+00091  C0B3  AD 14 C1              LDA VY  ; VY = VY + AY * DT
+00092  C0B6  6D 11 C1              ADC AY
+00093  C0B9  8D 14 C1              STA VY
+00094  C0BC  2C 11 C1              BIT AY
+00095  C0BF  30 04                 BMI MIY
+00096  C0C1  A9 00                 LDA #0
+00097  C0C3  10 02                 BPL MIY2
+00098  C0C5  A9 FF      MIY        LDA #255
+00099  C0C7  6D 15 C1   MIY2       ADC VY+1
+00100  C0CA  8D 15 C1              STA VY+1
+00101  C0CD             
+00102  C0CD  18                    CLC
+00103  C0CE                        ;LANDER
+00104  C0CE  AD 16 C1              LDA PXL  ; PX = PX + VX * DT
+00105  C0D1  6D 12 C1              ADC VX
+00106  C0D4  8D 16 C1              STA PXL
+00107  C0D7  AD 00 D0              LDA $D000
+00108  C0DA  6D 13 C1              ADC VX+1
+00109  C0DD  8D 00 D0              STA $D000 ; LANDER
+00110  C0E0  8D 02 D0              STA $D002 ; MAINENGINE
+00111  C0E3  8D 04 D0              STA $D004 ; LEFT ROKET
+00112  C0E6  8D 06 D0              STA $D006 ; RIGHT ROKET
+00113  C0E9                        
+00114  C0E9                        
+00115  C0E9  18                    CLC
+00116  C0EA  AD 17 C1              LDA PYL  ; PY = PY + VY * DT
+00117  C0ED  6D 14 C1              ADC VY
+00118  C0F0  8D 17 C1              STA PYL
+00119  C0F3  AD 01 D0              LDA $D001
+00120  C0F6  6D 15 C1              ADC VY+1
+00121  C0F9  8D 01 D0              STA $D001 ; LANDER
+00122  C0FC  8D 03 D0              STA $D003 ; MAINENGINE
+00123  C0FF  8D 05 D0              STA $D005 ; LEFT ROKET
+00124  C102  8D 07 D0              STA $D007 ; RIGHT ROKET
+00125  C105             
+00126  C105  A9 10                 LDA #%00010000 ; MASK JOYSTICK BUTTON PUSH
+00127  C107  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
+00128  C10A  F0 03                 BEQ EXIT       ; BUTTON PRESSED -> EXIT
+00129  C10C  4C 2E C0              JMP START
+00130  C10F  60         EXIT       RTS            ; BACK TO BASIC
+00131  C110             
+00132  C110  00         AX         BYTE 0
+00133  C111  00         AY         BYTE 0
+00134  C112  00         VX         BYTE 0
+00135  C113  00                    BYTE 0
+00136  C114  00         VY         BYTE 0
+00137  C115  00                    BYTE 0
+00138  C116  00         PXL        BYTE 0
+00139  C117  00         PYL        BYTE 0
+00140  C118  00         OFFS       BYTE 0
+00141  C119             
+
+******* 22 Label(s) *******
+ax = $C110 
+ay = $C111 
+cont01 = $C04E 
+cont02 = $C058 
+cont1 = $C069 
+cont2 = $C075 
+cont3 = $C086 
+cont4 = $C097 
+exit = $C10F 
+init = $C000 
+mix = $C0AA 
+mix2 = $C0AC 
+miy = $C0C5 
+miy2 = $C0C7 
+offs = $C118 
+pxL = $C116 
+pyL = $C117 
+row = $C01F 
+start = $C02E 
+vx = $C112 
+vy = $C114 
+wait = $C030 
+
+******* 1 Unused label(s) *******
+init
+
+******* 1 Variable(s) *******
+tgt_c64  = $0001
+******* 1 Unused variables(s) *******
+tgt_c64
+
