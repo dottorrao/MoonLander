@@ -19,8 +19,13 @@ init
         sta $d008
         lda #165
         sta $d009
-        
 
+        lda #35         ; index for fuel bar
+        sta decfl
+        lda #35         ;35
+        sta decflF 
+        sta decflFBk
+        
         ;jsr $e544      ; clean screen
         lda #0
         sta ax          ; accelerazione low
@@ -40,8 +45,6 @@ init
         sta $0286        ; text color set to write
         
         
-
-
 ; ##############################################################################
 ; SCREEN LANDSCAPE. USING A LOOP THE LANDSCAPE
 ;       IS GENERATED ROW BY ROW. X REGISTER IS USED TO COUNT THE NUMBER OF CHAR
@@ -171,6 +174,17 @@ drawfL  lda fl_lab,x    ; diaply fuel label
         inx
         cpx #4
         bne drawfL
+
+        ldx #0
+        
+drawfLBar  
+        lda #160
+        sta $0775,x
+        lda #1
+        sta $DB75,x
+        inx
+        cpx decfl       
+        bne drawfLBar
 
 ; ###########################################
 ; MAIN CODE
@@ -349,8 +363,50 @@ miy2    adc vy+1
         ;bit $dc00      ; bitwise AND with address 56320
         ;beq exit       ; button pressed -> exit
         
-        jmp main 
-exit    rts            ; back to basic
+        
+        ldy decflF
+        dey
+        sty decflF
+        cpy #0
+        bne endLoop
+        ldy decfl
+        dey
+        cpy #0
+        beq endFuel
+        lda #160
+        sta $0775,y
+        lda #0
+        sta $DB75,y
+        sty decfl
+        lda decflFBk
+        sta decflF
+        
+endLoop jmp main 
+
+endFuel
+        lda #%00110000  ; disable lander sprite and enable explosion
+        sta $D015       ;
+        lda $d000       ; move explosion sprite to right location
+        sta $D00A       ;
+        lda $d001
+        sta $D00B
+        ldx #0
+drawEndFuel
+        lda endFuel_msg,x   ; diaply message for out of fuel
+        sta $05F1,x
+        lda #1
+        sta $D9F1,x
+        inx
+        cpx #15
+        bne drawEndFuel  
+        jmp exit
+
+exit    ;rts                 ; back to basic
+restart lda #%00010000 ; mask joystick button push 
+        bit $dc00      ; bitwise AND with address 56320
+        bne restart    ; button pressed -> continue
+        jmp init
+
 
 ax      byte 0
 ay      byte 0  
@@ -360,6 +416,9 @@ vy      byte 0
         byte 0
 pxL     byte 0
 pyL     byte 0
+decfl   byte 0          ; decrement fluel
+decflF  byte 0          ; flag for decrement of fuel
+decflFBk byte 0 
 
 wl_msg  
         byte 16,18,5,19,19,32,6,9,18,5,32,20,15,32,12,1,14,4 ;PRESS FIRE TO LAND
@@ -375,6 +434,10 @@ cr_msg
 
 fl_lab  
         byte 6,21,5,12       ; FUEL
+
+endFuel_msg
+        byte 18,21,14,32,1,21,20,32,15,6,32,6,21,5,12 ; RUN OUT OF FUEL
+        
 
 ; Screen 1 -  Screen data
 ;_screen_data
