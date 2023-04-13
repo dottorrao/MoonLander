@@ -22,7 +22,7 @@ init
 
         lda #35         ; index for fuel bar
         sta decfl
-        lda #35         ;35
+        lda #35          ;35
         sta decflF 
         sta decflFBk
         
@@ -43,6 +43,16 @@ init
         sta $d021        ; backgoud color set to black    
         lda #1           ; $00 = white
         sta $0286        ; text color set to write
+
+        lda #%00000001
+        sta up 
+        lda #%00000010
+        sta dw 
+        lda #%00000100
+        sta lf
+        lda #%00001000
+        sta rg
+        
         
         
 ; ##############################################################################
@@ -52,9 +62,7 @@ init
 ;       CASE A SPACE. rowX BLOCKS ARE USED TO GENERATED THE ROWS, rowXc to define
 ;       THE COLOUR OF EACH CHAR. FOR EACH CHAR/COLOUR SEE THE MEMORY MAPS 
 ;       REPORTED INTO PROGRAMMER USER MANUAL.
-; ##############################################################################
-
-       
+; ##############################################################################       
 ;        ldy #>_screen_data
 ;        ldx #<_screen_data
 ;        stx $FB
@@ -85,8 +93,8 @@ init
 ;        iny
 ;        cpy #$E8
 ;        bne lastlap
-
 ;;;;;;;;;;;;;;;;;;;;;;;
+
         lda #160
         ldx #0
 
@@ -276,7 +284,7 @@ drawOK  lda ld_msg,x    ; diaply message for landing
         bne drawOk
         jmp exit      ; game end!
 
-cont02  lda #%00000001 ; mask joystick up movement 
+cont02  lda up ; mask joystick up movement 
         bit $dc00      ; bitwise AND with address 56320
         bne cont1      ; no thrust up
         lda #%00010011
@@ -284,13 +292,13 @@ cont02  lda #%00000001 ; mask joystick up movement
         lda #-4
         sta ay
 
-cont1   lda #%00000010 ; mask joystick down movement 
+cont1   lda dw ; mask joystick down movement 
         bit $dc00      ; bitwise AND with address 56320
         bne cont2      ; no thrust down
         lda #2
         sta ay
 
-cont2   lda #%00000100 ; mask joystick left movement 
+cont2   lda lf ; mask joystick left movement 
         bit $dc00      ; bitwise AND with address 56320
         bne cont3      ; no thrust left
         lda #%00011001
@@ -298,7 +306,8 @@ cont2   lda #%00000100 ; mask joystick left movement
         lda #-1
         sta ax
 
-cont3   lda #%00001000 ; mask joystick right movement 
+cont3   ;lda #%00001000 ; mask joystick right movement 
+        lda rg         ; mask joystick right movement 
         bit $dc00      ; bitwise AND with address 56320
         bne cont4      ; no thrust right
         lda #%00010101
@@ -384,12 +393,21 @@ miy2    adc vy+1
 endLoop jmp main 
 
 endFuel
-        lda #%00110000  ; disable lander sprite and enable explosion
-        sta $D015       ;
-        lda $d000       ; move explosion sprite to right location
-        sta $D00A       ;
-        lda $d001
-        sta $D00B
+        lda #%00010001   ; disable lander sprite for engines
+        sta $D015        ;
+        ;lda $d000       ; move explosion sprite to right location
+        ;sta $D00A       ;
+        ;lda $d001
+        ;sta $D00B
+        lda #%00000000
+        sta up 
+        lda #%00000000
+        sta dw 
+        lda #%00000000
+        sta lf
+        lda #%00000000
+        sta rg
+        
         ldx #0
 drawEndFuel
         lda endFuel_msg,x   ; diaply message for out of fuel
@@ -399,9 +417,9 @@ drawEndFuel
         inx
         cpx #15
         bne drawEndFuel  
-        jmp exit
+        jmp main
 
-exit    ;rts                 ; back to basic
+exit    ;rts           ; back to basic
 restart lda #%00010000 ; mask joystick button push 
         bit $dc00      ; bitwise AND with address 56320
         bne restart    ; button pressed -> continue
@@ -419,6 +437,11 @@ pyL     byte 0
 decfl   byte 0          ; decrement fluel
 decflF  byte 0          ; flag for decrement of fuel
 decflFBk byte 0 
+
+up      byte 0
+dw      byte 0
+lf      byte 0
+rg      byte 0
 
 wl_msg  
         byte 16,18,5,19,19,32,6,9,18,5,32,20,15,32,12,1,14,4 ;PRESS FIRE TO LAND
