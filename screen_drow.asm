@@ -10,7 +10,7 @@
         sty $FE
         
         ldy #$00
-
+        
 loop    
         lda ($FB),y
         sta ($FD),y
