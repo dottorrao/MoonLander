@@ -37,7 +37,7 @@ init    ;## initialization of variables ##
         lda #1          ; $00 = white
         sta $0286       ; text color set to white
 
-        lda #%00000001  ; these variables are used for joystick management  
+        lda #%00000001  ;  these variables are used for joystick management  
         sta up          ;  using these variables, it's possible to deactivate joystick
         lda #%00000010  ;  when fuel is over
         sta dw 
@@ -45,7 +45,7 @@ init    ;## initialization of variables ##
         sta lf
         lda #%00001000
         sta rg
-        
+
         ;## This section of code is to generate the bottom part of landscape ##
                   
         lda #160        ; chars and colour are set chars by chars
@@ -149,12 +149,12 @@ drawfLBar               ; drow of fuel bar
  
        
         ldx #0
-drawWlc lda wl_msg,x   ; diaply message "PRESS BUTTON TO START"
-        sta $05F1,x
+drawWlc lda wl_msg,x   ; disply message "PRESS BUTTON TO START"
+        sta $0428,x
         lda #1
-        sta $D9F1,x
+        sta $D828,x
         inx
-        cpx #18
+        cpx #32
         bne drawWlc
 
 welcome lda #%00010000 ; mask joystick button push 
@@ -164,11 +164,11 @@ welcome lda #%00010000 ; mask joystick button push
         ldx #0
 delWelcome 
         lda wl_msg_bl,x ; delete welcome message  
-        sta $05F1,x
+        sta $0428,x
         lda #1
-        sta $D9F1,x
+        sta $D828,x
         inx
-        cpx #18
+        cpx #32
         bne delWelcome
 
         ;## MAIN LOOP ##
@@ -203,11 +203,11 @@ wait    cmp $d012                  ;  wait until that raster is at row 255
         sta $D00B
         ldx #0
 drawCr  lda cr_msg,x    ; diaply message for crash
-        sta $05F1,x
+        sta $0432,x
         lda #1
-        sta $D9F1,x
+        sta $D832,x
         inx
-        cpx #7
+        cpx #27
         bne drawCr
         jmp exit         ; game quits!
         
@@ -369,40 +369,40 @@ restart lda #%00010000 ; mask joystick button push
 
         ;## variables ##
 
-ax      byte 0
-ay      byte 0  
-vx      byte 0
-        byte 0
-vy      byte 0
-        byte 0
-pxL     byte 0
-pyL     byte 0
-decfl   byte 0          ; decrement fluel
-decflF  byte 0          ; counter of game cycles
-decflFBk byte 0         ; counter of game cycles backup to restore them
+ax       byte 0
+ay       byte 0  
+vx       byte 0
+         byte 0
+vy       byte 0
+         byte 0
+pxL      byte 0
+pyL      byte 0
+decfl    byte 0          ; decrement fluel
+decflF   byte 0          ; counter of game cycles
+decflFBk byte 0          ; counter of game cycles backup to restore them
 
-up      byte 0          ; for Joistick management
-dw      byte 0
-lf      byte 0
-rg      byte 0
+up       byte 0          ; for Joistick management
+dw       byte 0
+lf       byte 0
+rg       byte 0
 
          ;## STRINGS ##
 
 wl_msg  
-        byte 16,18,5,19,19,32,6,9,18,5,32,20,15,32,12,1,14,4            ;PRESS FIRE TO LAND
-
+        byte 16,18,5,19,19,32,6,9,18,5,32,20,15,32,19,20,1,18,20,32,12,1,14,4,9,14,7,33            ;PRESS FIRE TO START LANDING!
+        
 wl_msg_bl 
-        byte 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32      ;SPACE ROW
+        byte 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32     ;SPACE ROW
 
 ld_msg  
-        byte 12,1,14,4,5,4                                              ; LANDED
+        byte 12,1,14,4,5,4                                                          ;LANDED
 
 cr_msg  
-        byte 3,18,1,19,8,5,4                                            ; CRASHED
+        byte 3,18,1,19,8,5,4,33,32,16,18,5,19,32,6,9,18,5,32,20,15,32,18,5,20,18,25 ;CRASHED
 
 fl_lab  
-        byte 6,21,5,12                                                  ; FUEL
+        byte 6,21,5,12                                                              ;FUEL
 
 endFuel_msg
-        byte 18,21,14,32,1,21,20,32,15,6,32,6,21,5,12                   ; RUN OUT OF FUEL
+        byte 18,21,14,32,1,21,20,32,15,6,32,6,21,5,12                               ;RUN OUT OF FUEL
         

@@ -1,527 +1,471 @@
 00001  0000             F*=$C000
 00002  C000             
 00003  C000             
-00004  C000             ; @                 
-00005  C000             ; INITIALIZATION OF ALL VARIABLES WITH VALUE 0
-00006  C000             ; @                 
-00007  C000             
-00008  C000             INIT       
-00009  C000                        
-00010  C000  A9 11                 LDA #%00010001  ; MAKE VISIBLE ONLY LANDER AND PLATFORM SPRITE
-00011  C002  8D 15 D0              STA $D015
-00012  C005             
-00013  C005  A9 2C                 LDA #44         ; POSITION OF LANDER
-00014  C007  8D 00 D0              STA $D000
-00015  C00A  A9 78                 LDA #120
-00016  C00C  8D 01 D0              STA $D001
-00017  C00F                        
-00018  C00F  A9 96                 LDA #150         ; POSITION OF PLATFORM
-00019  C011  8D 08 D0              STA $D008
-00020  C014  A9 A5                 LDA #165
-00021  C016  8D 09 D0              STA $D009
-00022  C019             
-00023  C019  A9 23                 LDA #35         ; INDEX FOR FUEL BAR
-00024  C01B  8D 87 C2              STA DECFL
-00025  C01E  A9 23                 LDA #35         ;35
-00026  C020  8D 88 C2              STA DECFLF
-00027  C023  8D 89 C2              STA DECFLFBK
-00028  C026                        
-00029  C026                        ;JSR $E544      ; CLEAN SCREEN
-00030  C026  A9 00                 LDA #0
-00031  C028  8D 7F C2              STA AX          ; ACCELERAZIONE LOW
-00032  C02B  8D 80 C2              STA AY
-00033  C02E  8D 81 C2              STA VX          ; VELOCITÀ LOW-HIGH
-00034  C031  8D 82 C2              STA VX+1
-00035  C034  8D 83 C2              STA VY
-00036  C037  8D 84 C2              STA VY+1
-00037  C03A  8D 85 C2              STA PXL         ; POSIZIONE LOW
-00038  C03D  8D 86 C2              STA PYL
-00039  C040             
-00040  C040                        ;LDA #%00000111  ; %00000111 = BROWN
-00041  C040                        ;STA $D020       ; BORDER COLOR SET TO BROWN
-00042  C040  A9 00                 LDA #%00000000   ; %00000000 = BLACK
-00043  C042  8D 21 D0              STA $D021        ; BACKGOUD COLOR SET TO BLACK
-00044  C045  A9 01                 LDA #1           ; $00 = WHITE
-00045  C047  8D 86 02              STA $0286        ; TEXT COLOR SET TO WRITE
-00046  C04A                        
-00047  C04A                        
-00048  C04A             ; @                 
-00049  C04A             ; SCREEN LANDSCAPE. USING A LOOP THE LANDSCAPE
-00050  C04A             ;       IS GENERATED ROW BY ROW. X REGISTER IS USED TO COUNT THE NUMBER OF CHAR
-00051  C04A             ;       TO DROW ROW BY ROW. ACCUMULATOR CONTAINS THE CHARS TO DROW, IN THIS
-00052  C04A             ;       CASE A SPACE. ROWX BLOCKS ARE USED TO GENERATED THE ROWS, ROWXC TO DEFINE
-00053  C04A             ;       THE COLOUR OF EACH CHAR. FOR EACH CHAR/COLOUR SEE THE MEMORY MAPS
-00054  C04A             ;       REPORTED INTO PROGRAMMER USER MANUAL.
-00055  C04A             ; @                 
-00056  C04A             
-00057  C04A                        
-00058  C04A             ;        LDY #>_SCREEN_DATA
-00059  C04A             ;        LDX #<_SCREEN_DATA
-00060  C04A             ;        STX $FB
-00061  C04A             ;        STY $FC
-00062  C04A             ;        LDX #$00
-00063  C04A             ;        LDY #$04
-00064  C04A             ;        STX $FD
-00065  C04A             ;        STY $FE
-00066  C04A             ;
-00067  C04A             ;        LDY #$00
-00068  C04A             ;
-00069  C04A             ;LOOP
-00070  C04A             ;        LDA ($FB),Y
-00071  C04A             ;        STA ($FD),Y
-00072  C04A             ;        INY
-00073  C04A             ;        BNE LOOP
-00074  C04A             ;        INC $FC
-00075  C04A             ;        INC $FE
-00076  C04A             ;        LDX $FE
-00077  C04A             ;        CMP #$07
-00078  C04A             ;        BNE LOOP
-00079  C04A             
-00080  C04A             ;       LDY #$00
-00081  C04A             
-00082  C04A             ;LASTLAP
-00083  C04A             ;        LDA ($FB),Y
-00084  C04A             ;        STA ($FD),Y
-00085  C04A             ;        INY
-00086  C04A             ;        CPY #$E8
-00087  C04A             ;        BNE LASTLAP
-00088  C04A             
-00089  C04A             ;;;;;;;;;;;;;;;;;;;;;;;
-00090  C04A  A9 A0                 LDA #160
-00091  C04C  A2 00                 LDX #0
-00092  C04E             
-00093  C04E  9D C0 07   ROW1       STA $07C0,X
-00094  C051  E8                    INX
-00095  C052  E0 28                 CPX #40
-00096  C054  D0 F8                 BNE ROW1
-00097  C056             
-00098  C056  A2 00                 LDX #0
-00099  C058  9D 98 07   ROW2       STA $0798,X
-00100  C05B  E8                    INX
-00101  C05C  E0 28                 CPX #40
-00102  C05E  D0 F8                 BNE ROW2
-00103  C060             
-00104  C060  A2 00                 LDX #0
-00105  C062  9D 70 07   ROW3       STA $770,X
-00106  C065  E8                    INX
-00107  C066  E0 14                 CPX #20
-00108  C068  D0 F8                 BNE ROW3
-00109  C06A             
-00110  C06A  A2 00                 LDX #0
-00111  C06C  9D 48 07   ROW4       STA $748,X
-00112  C06F  E8                    INX
-00113  C070  E0 13                 CPX #19
-00114  C072  D0 F8                 BNE ROW4
-00115  C074             
-00116  C074             
-00117  C074  A2 00                 LDX #0
-00118  C076  9D 20 07   ROW5       STA $720,X
-00119  C079  E8                    INX
-00120  C07A  E0 11                 CPX #17
-00121  C07C  D0 F8                 BNE ROW5
-00122  C07E             
-00123  C07E  A2 00                 LDX #0
-00124  C080  9D F8 06   ROW6       STA $6F8,X
-00125  C083  E8                    INX
-00126  C084  E0 0F                 CPX #15
-00127  C086  D0 F8                 BNE ROW6
-00128  C088             
-00129  C088                        
-00130  C088  A9 09                 LDA #9
-00131  C08A  A2 00                 LDX #0
-00132  C08C             
-00133  C08C  A2 00                 LDX #0
-00134  C08E  9D C0 DB   ROW1C      STA $DBC0,X
-00135  C091  E8                    INX
-00136  C092  E0 28                 CPX #40
-00137  C094  D0 F8                 BNE ROW1C
-00138  C096                        
-00139  C096  A2 00                 LDX #0
-00140  C098  9D 98 DB   ROW2C      STA $DB98,X
-00141  C09B  E8                    INX
-00142  C09C  E0 28                 CPX #40
-00143  C09E  D0 F8                 BNE ROW2C
-00144  C0A0             
-00145  C0A0  A2 00                 LDX #0
-00146  C0A2  9D 70 DB   ROW3C      STA $DB70,X
-00147  C0A5  E8                    INX
-00148  C0A6  E0 14                 CPX #20
-00149  C0A8  D0 F8                 BNE ROW3C
-00150  C0AA             
-00151  C0AA  A2 00                 LDX #0
-00152  C0AC  9D 48 DB   ROW4C      STA $DB48,X
-00153  C0AF  E8                    INX
-00154  C0B0  E0 13                 CPX #19
-00155  C0B2  D0 F8                 BNE ROW4C
-00156  C0B4             
-00157  C0B4  A2 00                 LDX #0
-00158  C0B6  9D 20 DB   ROW5C      STA $DB20,X
-00159  C0B9  E8                    INX
-00160  C0BA  E0 11                 CPX #17
-00161  C0BC  D0 F8                 BNE ROW5C
-00162  C0BE             
-00163  C0BE  A2 00                 LDX #0
-00164  C0C0  9D F8 DA   ROW6C      STA $DAF8,X
-00165  C0C3  E8                    INX
-00166  C0C4  E0 0F                 CPX #15
-00167  C0C6  D0 F8                 BNE ROW6C
-00168  C0C8                        
-00169  C0C8  A2 00                 LDX #0
-00170  C0CA  BD BB C2   DRAWFL     LDA FL_LAB,X    ; DIAPLY FUEL LABEL
-00171  C0CD  9D 70 07              STA $0770,X
-00172  C0D0  A9 01                 LDA #1
-00173  C0D2  9D 70 DB              STA $DB70,X
-00174  C0D5  E8                    INX
-00175  C0D6  E0 04                 CPX #4
-00176  C0D8  D0 F0                 BNE DRAWFL
-00177  C0DA             
-00178  C0DA  A2 00                 LDX #0
-00179  C0DC                        
-00180  C0DC             DRAWFLBAR  
-00181  C0DC  A9 A0                 LDA #160
-00182  C0DE  9D 75 07              STA $0775,X
-00183  C0E1  A9 01                 LDA #1
-00184  C0E3  9D 75 DB              STA $DB75,X
-00185  C0E6  E8                    INX
-00186  C0E7  EC 87 C2              CPX DECFL
-00187  C0EA  D0 F0                 BNE DRAWFLBAR
-00188  C0EC             
-00189  C0EC             ; @                 
-00190  C0EC             ; MAIN CODE
-00191  C0EC             ; @                 
-00192  C0EC             
-00193  C0EC                        
-00194  C0EC                        ;@                  
-00195  C0EC                        ;PRESS BUTTON TO START
-00196  C0EC                        ;@                  
-00197  C0EC  A2 00                 LDX #0
-00198  C0EE  BD 8A C2   DRAWWLC    LDA WL_MSG,X   ; DIAPLY WELCOME MESSAGE
-00199  C0F1  9D F1 05              STA $05F1,X
-00200  C0F4  A9 01                 LDA #1
-00201  C0F6  9D F1 D9              STA $D9F1,X
-00202  C0F9  E8                    INX
-00203  C0FA  E0 12                 CPX #18
-00204  C0FC  D0 F0                 BNE DRAWWLC
-00205  C0FE             
-00206  C0FE  A9 10      WELCOME    LDA #%00010000 ; MASK JOYSTICK BUTTON PUSH
-00207  C100  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
-00208  C103  D0 F9                 BNE WELCOME    ; BUTTON PRESSED -> CONTINUE
-00209  C105             
-00210  C105             
-00211  C105  A2 00                 LDX #0
-00212  C107             DELWELCOME 
-00213  C107  BD 9C C2              LDA WL_MSG_BL,X   ; DIAPLY WELCOME MESSAGE
-00214  C10A  9D F1 05              STA $05F1,X
-00215  C10D  A9 01                 LDA #1
-00216  C10F  9D F1 D9              STA $D9F1,X
-00217  C112  E8                    INX
-00218  C113  E0 12                 CPX #18
-00219  C115  D0 F0                 BNE DELWELCOME
-00220  C117             
-00221  C117             
-00222  C117  A9 FF      MAIN       LDA #$FF ; 255 = %11111111 ;>> TRICK TO MAKE THE PROGRAM MORE SLOW.
-00223  C119  CD 12 D0   WAIT       CMP $D012                  ;  WAIT UNTIL THAT RASTER IS AT ROW 255
-00224  C11C  D0 FB                 BNE WAIT                   ;  $D012 CONTAINS THE NUMBER OF SCREEN ROW THAT
-00225  C11E                        ;  RASTER IS DROWING
-00226  C11E  A9 11                 LDA #%00010001             ;>> INTO REGISTER $D015 ARE REPORTED WHICH
-00227  C120  8D 15 D0              STA $D015                  ;  SPRITES ARE VISIBLE OR NOT. AT BEGINNING
-00228  C123                        ;  ONLY LANDER AND PLATFORM.
-00229  C123  A9 00                 LDA #0
-00230  C125  8D 7F C2              STA AX
-00231  C128  A9 01                 LDA #1
-00232  C12A  8D 80 C2              STA AY
-00233  C12D                        
-00234  C12D                        ; @                 
-00235  C12D                        ; COLLISION MANAGEMENT BETWEEN LANDER AND BACKGROUND.
-00236  C12D                        ; $D01F
-00237  C12D                        ; BIT #X: 1 = SPRITE #X COLLIDED WITH BACKGROUND.
-00238  C12D                        ; IF COLLISION BETWEEN LANDER AND BACKGROUND IS DETECTED,
-00239  C12D                        ; LANDER SPRITE IS DISABLED AND GAME QUITS.
-00240  C12D                        ; @                 
-00241  C12D  A9 01                 LDA #%00000001
-00242  C12F  2C 1F D0              BIT $D01F
-00243  C132  F0 26                 BEQ CONT01
-00244  C134  A9 30                 LDA #%00110000  ; DISABLE LANDER SPRITE AND ENABLE EXPLOSION
-00245  C136  8D 15 D0              STA $D015       ;
-00246  C139  AD 00 D0              LDA $D000       ; MOVE EXPLOSION SPRITE TO RIGHT LOCATION
-00247  C13C  8D 0A D0              STA $D00A       ;
-00248  C13F  AD 01 D0              LDA $D001
-00249  C142  8D 0B D0              STA $D00B
-00250  C145  A2 00                 LDX #0
-00251  C147  BD B4 C2   DRAWCR     LDA CR_MSG,X    ; DIAPLY MESSAGE FOR CRASH
-00252  C14A  9D F1 05              STA $05F1,X
-00253  C14D  A9 01                 LDA #1
-00254  C14F  9D F1 D9              STA $D9F1,X
-00255  C152  E8                    INX
-00256  C153  E0 07                 CPX #7
-00257  C155  D0 F0                 BNE DRAWCR
-00258  C157  4C 75 C2              JMP EXIT         ; GAME END!
-00259  C15A                        ; @                 
-00260  C15A                        ; COLLISION MANAGEMENT BETWEEN LANDER AND PLATFORM
-00261  C15A                        ; $D01E
-00262  C15A                        ; BIT #X: 1 = SPRITE #X COLLIDED WITH ANOTHER SPRITE.
-00263  C15A                        ; @                 
-00264  C15A  A9 01      CONT01     LDA #%00000001
-00265  C15C  2C 1E D0              BIT $D01E
-00266  C15F  F0 18                 BEQ CONT02
-00267  C161  4C 64 C1              JMP LANDED
-00268  C164             
-00269  C164  A2 00      LANDED     LDX #0
-00270  C166  BD AE C2   DRAWOK     LDA LD_MSG,X    ; DIAPLY MESSAGE FOR LANDING
-00271  C169  9D F1 05              STA $05F1,X     ; STRANGE BEHAVIOUR HERE!!! SEEMS THAT OLWAYS COLLISION
-00272  C16C  A9 01                 LDA #1          ; IS PRESENT. WHY???
-00273  C16E  9D F1 D9              STA $D9F1,X
-00274  C171  E8                    INX
-00275  C172  E0 06                 CPX #6
-00276  C174  D0 F0                 BNE DRAWOK
-00277  C176  4C 75 C2              JMP EXIT      ; GAME END!
-00278  C179             
-00279  C179  A9 01      CONT02     LDA #%00000001 ; MASK JOYSTICK UP MOVEMENT
-00280  C17B  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
-00281  C17E  D0 0A                 BNE CONT1      ; NO THRUST UP
-00282  C180  A9 13                 LDA #%00010011
-00283  C182  8D 15 D0              STA $D015
-00284  C185  A9 FC                 LDA #-4
-00285  C187  8D 80 C2              STA AY
-00286  C18A             
-00287  C18A  A9 02      CONT1      LDA #%00000010 ; MASK JOYSTICK DOWN MOVEMENT
-00288  C18C  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
-00289  C18F  D0 05                 BNE CONT2      ; NO THRUST DOWN
-00290  C191  A9 02                 LDA #2
-00291  C193  8D 80 C2              STA AY
-00292  C196             
-00293  C196  A9 04      CONT2      LDA #%00000100 ; MASK JOYSTICK LEFT MOVEMENT
-00294  C198  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
-00295  C19B  D0 0A                 BNE CONT3      ; NO THRUST LEFT
-00296  C19D  A9 19                 LDA #%00011001
-00297  C19F  8D 15 D0              STA $D015
-00298  C1A2  A9 FF                 LDA #-1
-00299  C1A4  8D 7F C2              STA AX
-00300  C1A7             
-00301  C1A7  A9 08      CONT3      LDA #%00001000 ; MASK JOYSTICK RIGHT MOVEMENT
-00302  C1A9  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
-00303  C1AC  D0 0A                 BNE CONT4      ; NO THRUST RIGHT
-00304  C1AE  A9 15                 LDA #%00010101
-00305  C1B0  8D 15 D0              STA $D015
-00306  C1B3  A9 01                 LDA #1
-00307  C1B5  8D 7F C2              STA AX
-00308  C1B8             
-00309  C1B8  18         CONT4      CLC
-00310  C1B9  AD 81 C2              LDA VX  ; VX = VX + AX * DT
-00311  C1BC  6D 7F C2              ADC AX
-00312  C1BF  8D 81 C2              STA VX
-00313  C1C2  2C 7F C2              BIT AX
-00314  C1C5  30 04                 BMI MIX
-00315  C1C7  A9 00                 LDA #0
-00316  C1C9  10 02                 BPL MIX2
-00317  C1CB  A9 FF      MIX        LDA #255
-00318  C1CD  6D 82 C2   MIX2       ADC VX+1
-00319  C1D0  8D 82 C2              STA VX+1
-00320  C1D3             
-00321  C1D3  18                    CLC
-00322  C1D4  AD 83 C2              LDA VY  ; VY = VY + AY * DT
-00323  C1D7  6D 80 C2              ADC AY
-00324  C1DA  8D 83 C2              STA VY
-00325  C1DD  2C 80 C2              BIT AY
-00326  C1E0  30 04                 BMI MIY
-00327  C1E2  A9 00                 LDA #0
-00328  C1E4  10 02                 BPL MIY2
-00329  C1E6  A9 FF      MIY        LDA #255
-00330  C1E8  6D 84 C2   MIY2       ADC VY+1
-00331  C1EB  8D 84 C2              STA VY+1
-00332  C1EE             
-00333  C1EE  18                    CLC
-00334  C1EF                        ;LANDER
-00335  C1EF  AD 85 C2              LDA PXL  ; PX = PX + VX * DT
-00336  C1F2  6D 81 C2              ADC VX
-00337  C1F5  8D 85 C2              STA PXL
-00338  C1F8  AD 00 D0              LDA $D000
-00339  C1FB  6D 82 C2              ADC VX+1
-00340  C1FE  8D 00 D0              STA $D000 ; LANDER
-00341  C201  8D 02 D0              STA $D002 ; MAINENGINE
-00342  C204  8D 04 D0              STA $D004 ; LEFT ROKET
-00343  C207  8D 06 D0              STA $D006 ; RIGHT ROKET
-00344  C20A                        
-00345  C20A                        
-00346  C20A  18                    CLC
-00347  C20B  AD 86 C2              LDA PYL  ; PY = PY + VY * DT
-00348  C20E  6D 83 C2              ADC VY
-00349  C211  8D 86 C2              STA PYL
-00350  C214  AD 01 D0              LDA $D001
-00351  C217  6D 84 C2              ADC VY+1
-00352  C21A  8D 01 D0              STA $D001 ; LANDER
-00353  C21D  8D 03 D0              STA $D003 ; MAINENGINE
-00354  C220  8D 05 D0              STA $D005 ; LEFT ROKET
-00355  C223  8D 07 D0              STA $D007 ; RIGHT ROKET
-00356  C226                        
-00357  C226                        ;LDA $D01E
-00358  C226                        ;LDX $D01E
-00359  C226                        ;JSR $BDCD
-00360  C226                        ;JSR $E544
-00361  C226             
-00362  C226                        ;LDA #%00010000 ; MASK JOYSTICK BUTTON PUSH
-00363  C226                        ;BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
-00364  C226                        ;BEQ EXIT       ; BUTTON PRESSED -> EXIT
-00365  C226                        
-00366  C226                        
-00367  C226  AC 88 C2              LDY DECFLF
-00368  C229  88                    DEY
-00369  C22A  8C 88 C2              STY DECFLF
-00370  C22D  C0 00                 CPY #0
-00371  C22F  D0 1B                 BNE ENDLOOP
-00372  C231  AC 87 C2              LDY DECFL
-00373  C234  88                    DEY
-00374  C235  C0 00                 CPY #0
-00375  C237  F0 16                 BEQ ENDFUEL
-00376  C239  A9 A0                 LDA #160
-00377  C23B  99 75 07              STA $0775,Y
-00378  C23E  A9 00                 LDA #0
-00379  C240  99 75 DB              STA $DB75,Y
-00380  C243  8C 87 C2              STY DECFL
-00381  C246  AD 89 C2              LDA DECFLFBK
-00382  C249  8D 88 C2              STA DECFLF
-00383  C24C                        
-00384  C24C  4C 17 C1   ENDLOOP    JMP MAIN
-00385  C24F             
-00386  C24F             ENDFUEL
-00387  C24F  A9 30                 LDA #%00110000  ; DISABLE LANDER SPRITE AND ENABLE EXPLOSION
-00388  C251  8D 15 D0              STA $D015       ;
-00389  C254  AD 00 D0              LDA $D000       ; MOVE EXPLOSION SPRITE TO RIGHT LOCATION
-00390  C257  8D 0A D0              STA $D00A       ;
-00391  C25A  AD 01 D0              LDA $D001
-00392  C25D  8D 0B D0              STA $D00B
-00393  C260  A2 00                 LDX #0
-00394  C262             DRAWENDFUEL 
-00395  C262  BD BF C2              LDA ENDFUEL_MSG,X   ; DIAPLY MESSAGE FOR OUT OF FUEL
-00396  C265  9D F1 05              STA $05F1,X
-00397  C268  A9 01                 LDA #1
-00398  C26A  9D F1 D9              STA $D9F1,X
-00399  C26D  E8                    INX
-00400  C26E  E0 0F                 CPX #15
-00401  C270  D0 F0                 BNE DRAWENDFUEL
-00402  C272  4C 75 C2              JMP EXIT
-00403  C275             
-00404  C275             EXIT       ;RTS                 ; BACK TO BASIC
-00405  C275  A9 10      RESTART    LDA #%00010000 ; MASK JOYSTICK BUTTON PUSH
-00406  C277  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
-00407  C27A  D0 F9                 BNE RESTART    ; BUTTON PRESSED -> CONTINUE
-00408  C27C  4C 00 C0              JMP INIT
-00409  C27F             
-00410  C27F             
-00411  C27F  00         AX         BYTE 0
-00412  C280  00         AY         BYTE 0
-00413  C281  00         VX         BYTE 0
-00414  C282  00                    BYTE 0
-00415  C283  00         VY         BYTE 0
-00416  C284  00                    BYTE 0
-00417  C285  00         PXL        BYTE 0
-00418  C286  00         PYL        BYTE 0
-00419  C287  00         DECFL      BYTE 0          ; DECREMENT FLUEL
-00420  C288  00         DECFLF     BYTE 0          ; FLAG FOR DECREMENT OF FUEL
-00421  C289  00         DECFLFBK   BYTE 0
-00422  C28A             
-00423  C28A             WL_MSG     
-00424  C28A  10 12 05              BYTE 16,18,5,19,19,32,6,9,18,5,32,20,15,32,12,1,14,4 ;PRESS FIRE TO LAND
-00425  C29C             
-00426  C29C             WL_MSG_BL  
-00427  C29C  20 20 20              BYTE 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
-00428  C2AE             
-00429  C2AE             LD_MSG     
-00430  C2AE  0C 01 0E              BYTE 12,1,14,4,5,4   ; LANDED
-00431  C2B4             
-00432  C2B4             CR_MSG     
-00433  C2B4  03 12 01              BYTE 3,18,1,19,8,5,4 ; CRASHED
-00434  C2BB             
-00435  C2BB             FL_LAB     
-00436  C2BB  06 15 05              BYTE 6,21,5,12       ; FUEL
-00437  C2BF             
-00438  C2BF             ENDFUEL_MSG 
-00439  C2BF  12 15 0E              BYTE 18,21,14,32,1,21,20,32,15,6,32,6,21,5,12 ; RUN OUT OF FUEL
-00440  C2CE                        
-00441  C2CE             
-00442  C2CE             ; SCREEN 1 -  SCREEN DATA
-00443  C2CE             ;_SCREEN_DATA
-00444  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$66,$66
-00445  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66
-00446  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$20,$66,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66
-00447  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66
-00448  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66
-00449  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66
-00450  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00451  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00452  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00453  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00454  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66
-00455  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66
-00456  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66
-00457  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00458  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00459  C2CE             ;        BYTE    $20,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$20,$20,$20,$20,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00460  C2CE             ;        BYTE    $66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00461  C2CE             ;        BYTE    $66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00462  C2CE             ;        BYTE    $66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00463  C2CE             ;        BYTE    $66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00464  C2CE             ;        BYTE    $66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00465  C2CE             ;        BYTE    $66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00466  C2CE             ;        BYTE    $66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00467  C2CE             ;        BYTE    $66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00468  C2CE             ;        BYTE    $66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66,$66
-00469  C2CE             
+00004  C000             INIT       ;@ INITIALIZATION OF VARIABLES 
+00005  C000                        
+00006  C000  A9 11                 LDA #%00010001  ; MAKE VISIBLE ONLY LANDER AND PLATFORM SPRITE
+00007  C002  8D 15 D0              STA $D015
+00008  C005             
+00009  C005  A9 2C                 LDA #44         ; POSITION OF LANDER
+00010  C007  8D 00 D0              STA $D000
+00011  C00A  A9 78                 LDA #120
+00012  C00C  8D 01 D0              STA $D001
+00013  C00F                        
+00014  C00F  A9 96                 LDA #150        ; POSITION OF PLATFORM
+00015  C011  8D 08 D0              STA $D008
+00016  C014  A9 A5                 LDA #165
+00017  C016  8D 09 D0              STA $D009
+00018  C019             
+00019  C019  A9 23                 LDA #35         ;LENGHT FOR FUEL BAR
+00020  C01B  8D A7 C2              STA DECFL
+00021  C01E  A9 23                 LDA #35         ;NUMBER OF GAME CYCLE TO DO BEFORE TO DECREMENT FUEL BAR BY 1
+00022  C020  8D A8 C2              STA DECFLF
+00023  C023  8D A9 C2              STA DECFLFBK    ;THIS IS NEEDED TO RESTART THE COUNTER OF GAME CYCLE
+00024  C026                        
+00025  C026  A9 00                 LDA #0          ;INIZIALIZATION OF VARIABLES TO MANAGE LANDER MOVEMENT
+00026  C028  8D 9F C2              STA AX
+00027  C02B  8D A0 C2              STA AY
+00028  C02E  8D A1 C2              STA VX
+00029  C031  8D A2 C2              STA VX+1
+00030  C034  8D A3 C2              STA VY
+00031  C037  8D A4 C2              STA VY+1
+00032  C03A  8D A5 C2              STA PXL
+00033  C03D  8D A6 C2              STA PYL
+00034  C040             
+00035  C040  A9 00                 LDA #%00000000  ; %00000000 = BLACK
+00036  C042  8D 21 D0              STA $D021       ; BACKGOUD COLOR SET TO BLACK
+00037  C045  A9 01                 LDA #1          ; $00 = WHITE
+00038  C047  8D 86 02              STA $0286       ; TEXT COLOR SET TO WHITE
+00039  C04A             
+00040  C04A  A9 01                 LDA #%00000001  ;  THESE VARIABLES ARE USED FOR JOYSTICK MANAGEMENT
+00041  C04C  8D AA C2              STA UP          ;  USING THESE VARIABLES, IT'S POSSIBLE TO DEACTIVATE JOYSTICK
+00042  C04F  A9 02                 LDA #%00000010  ;  WHEN FUEL IS OVER
+00043  C051  8D AB C2              STA DW
+00044  C054  A9 04                 LDA #%00000100
+00045  C056  8D AC C2              STA LF
+00046  C059  A9 08                 LDA #%00001000
+00047  C05B  8D AD C2              STA RG
+00048  C05E             
+00049  C05E                        ;@ THIS SECTION OF CODE IS TO GENERATE THE BOTTOM PART OF LANDSCAPE 
+00050  C05E                        
+00051  C05E  A9 A0                 LDA #160        ; CHARS AND COLOUR ARE SET CHARS BY CHARS
+00052  C060  A2 00                 LDX #0
+00053  C062             
+00054  C062  9D C0 07   ROW1       STA $07C0,X
+00055  C065  E8                    INX
+00056  C066  E0 28                 CPX #40
+00057  C068  D0 F8                 BNE ROW1
+00058  C06A             
+00059  C06A  A2 00                 LDX #0
+00060  C06C  9D 98 07   ROW2       STA $0798,X
+00061  C06F  E8                    INX
+00062  C070  E0 28                 CPX #40
+00063  C072  D0 F8                 BNE ROW2
+00064  C074             
+00065  C074  A2 00                 LDX #0
+00066  C076  9D 70 07   ROW3       STA $770,X
+00067  C079  E8                    INX
+00068  C07A  E0 14                 CPX #20
+00069  C07C  D0 F8                 BNE ROW3
+00070  C07E             
+00071  C07E  A2 00                 LDX #0
+00072  C080  9D 48 07   ROW4       STA $748,X
+00073  C083  E8                    INX
+00074  C084  E0 13                 CPX #19
+00075  C086  D0 F8                 BNE ROW4
+00076  C088             
+00077  C088             
+00078  C088  A2 00                 LDX #0
+00079  C08A  9D 20 07   ROW5       STA $720,X
+00080  C08D  E8                    INX
+00081  C08E  E0 11                 CPX #17
+00082  C090  D0 F8                 BNE ROW5
+00083  C092             
+00084  C092  A2 00                 LDX #0
+00085  C094  9D F8 06   ROW6       STA $6F8,X
+00086  C097  E8                    INX
+00087  C098  E0 0F                 CPX #15
+00088  C09A  D0 F8                 BNE ROW6
+00089  C09C             
+00090  C09C                        
+00091  C09C  A9 09                 LDA #9
+00092  C09E  A2 00                 LDX #0
+00093  C0A0             
+00094  C0A0  A2 00                 LDX #0
+00095  C0A2  9D C0 DB   ROW1C      STA $DBC0,X
+00096  C0A5  E8                    INX
+00097  C0A6  E0 28                 CPX #40
+00098  C0A8  D0 F8                 BNE ROW1C
+00099  C0AA                        
+00100  C0AA  A2 00                 LDX #0
+00101  C0AC  9D 98 DB   ROW2C      STA $DB98,X
+00102  C0AF  E8                    INX
+00103  C0B0  E0 28                 CPX #40
+00104  C0B2  D0 F8                 BNE ROW2C
+00105  C0B4             
+00106  C0B4  A2 00                 LDX #0
+00107  C0B6  9D 70 DB   ROW3C      STA $DB70,X
+00108  C0B9  E8                    INX
+00109  C0BA  E0 14                 CPX #20
+00110  C0BC  D0 F8                 BNE ROW3C
+00111  C0BE             
+00112  C0BE  A2 00                 LDX #0
+00113  C0C0  9D 48 DB   ROW4C      STA $DB48,X
+00114  C0C3  E8                    INX
+00115  C0C4  E0 13                 CPX #19
+00116  C0C6  D0 F8                 BNE ROW4C
+00117  C0C8             
+00118  C0C8  A2 00                 LDX #0
+00119  C0CA  9D 20 DB   ROW5C      STA $DB20,X
+00120  C0CD  E8                    INX
+00121  C0CE  E0 11                 CPX #17
+00122  C0D0  D0 F8                 BNE ROW5C
+00123  C0D2             
+00124  C0D2  A2 00                 LDX #0
+00125  C0D4  9D F8 DA   ROW6C      STA $DAF8,X
+00126  C0D7  E8                    INX
+00127  C0D8  E0 0F                 CPX #15
+00128  C0DA  D0 F8                 BNE ROW6C
+00129  C0DC                        
+00130  C0DC  A2 00                 LDX #0
+00131  C0DE  BD 07 C3   DRAWFL     LDA FL_LAB,X    ; DROW OF FUEL LABEL
+00132  C0E1  9D 70 07              STA $0770,X
+00133  C0E4  A9 01                 LDA #1
+00134  C0E6  9D 70 DB              STA $DB70,X
+00135  C0E9  E8                    INX
+00136  C0EA  E0 04                 CPX #4
+00137  C0EC  D0 F0                 BNE DRAWFL
+00138  C0EE             
+00139  C0EE  A2 00                 LDX #0
+00140  C0F0                        
+00141  C0F0             DRAWFLBAR  ; DROW OF FUEL BAR
+00142  C0F0  A9 A0                 LDA #160
+00143  C0F2  9D 75 07              STA $0775,X
+00144  C0F5  A9 01                 LDA #1
+00145  C0F7  9D 75 DB              STA $DB75,X
+00146  C0FA  E8                    INX
+00147  C0FB  EC A7 C2              CPX DECFL
+00148  C0FE  D0 F0                 BNE DRAWFLBAR
+00149  C100                        
+00150  C100                        
+00151  C100  A2 00                 LDX #0
+00152  C102  BD AE C2   DRAWWLC    LDA WL_MSG,X   ; DISPLY MESSAGE "PRESS BUTTON TO START"
+00153  C105  9D 28 04              STA $0428,X
+00154  C108  A9 01                 LDA #1
+00155  C10A  9D 28 D8              STA $D828,X
+00156  C10D  E8                    INX
+00157  C10E  E0 20                 CPX #32
+00158  C110  D0 F0                 BNE DRAWWLC
+00159  C112             
+00160  C112  A9 10      WELCOME    LDA #%00010000 ; MASK JOYSTICK BUTTON PUSH
+00161  C114  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320.
+00162  C117  D0 F9                 BNE WELCOME    ; BUTTON PRESSED -> CONTINUE. PROGRAM WAIT UNTIL BUTTON PRESSED.
+00163  C119             
+00164  C119  A2 00                 LDX #0
+00165  C11B             DELWELCOME 
+00166  C11B  BD CA C2              LDA WL_MSG_BL,X ; DELETE WELCOME MESSAGE
+00167  C11E  9D 28 04              STA $0428,X
+00168  C121  A9 01                 LDA #1
+00169  C123  9D 28 D8              STA $D828,X
+00170  C126  E8                    INX
+00171  C127  E0 20                 CPX #32
+00172  C129  D0 F0                 BNE DELWELCOME
+00173  C12B             
+00174  C12B                        ;@ MAIN LOOP        
+00175  C12B             
+00176  C12B  A9 FF      MAIN       LDA #$FF ; 255 = %11111111 ;>> TRICK TO MAKE THE PROGRAM MORE SLOW.
+00177  C12D             
+00178  C12D  CD 12 D0   WAIT       CMP $D012                  ;  WAIT UNTIL THAT RASTER IS AT ROW 255
+00179  C130  D0 FB                 BNE WAIT                   ;  $D012 CONTAINS THE NUMBER OF SCREEN ROW THAT RASTER IS DROWING
+00180  C132                        
+00181  C132  A9 11                 LDA #%00010001             ;>> INTO REGISTER $D015 ARE REPORTED WHICH
+00182  C134  8D 15 D0              STA $D015                  ;  SPRITES ARE VISIBLE OR NOT. AT BEGINNING ONLY LANDER AND PLATFORM.
+00183  C137  A9 00                 LDA #0
+00184  C139  8D 9F C2              STA AX
+00185  C13C  A9 01                 LDA #1
+00186  C13E  8D A0 C2              STA AY
+00187  C141                        
+00188  C141                        ; @                 
+00189  C141                        ; COLLISION MANAGEMENT BETWEEN LANDER AND BACKGROUND.
+00190  C141                        ; $D01F
+00191  C141                        ; BIT #X: 1 = SPRITE #X COLLIDED WITH BACKGROUND.
+00192  C141                        ; IF COLLISION BETWEEN LANDER AND BACKGROUND IS DETECTED,
+00193  C141                        ; LANDER SPRITE IS DISABLED AND GAME QUITS.
+00194  C141                        ; @                 
+00195  C141  A9 01                 LDA #%00000001
+00196  C143  2C 1F D0              BIT $D01F
+00197  C146  F0 26                 BEQ CONT01
+00198  C148  A9 30                 LDA #%00110000  ; DISABLE LANDER SPRITE AND ENABLE EXPLOSION
+00199  C14A  8D 15 D0              STA $D015       ;
+00200  C14D  AD 00 D0              LDA $D000       ; MOVE EXPLOSION SPRITE TO RIGHT LOCATION
+00201  C150  8D 0A D0              STA $D00A       ;
+00202  C153  AD 01 D0              LDA $D001
+00203  C156  8D 0B D0              STA $D00B
+00204  C159  A2 00                 LDX #0
+00205  C15B  BD EC C2   DRAWCR     LDA CR_MSG,X    ; DIAPLY MESSAGE FOR CRASH
+00206  C15E  9D 32 04              STA $0432,X
+00207  C161  A9 01                 LDA #1
+00208  C163  9D 32 D8              STA $D832,X
+00209  C166  E8                    INX
+00210  C167  E0 1B                 CPX #27
+00211  C169  D0 F0                 BNE DRAWCR
+00212  C16B  4C 95 C2              JMP EXIT         ; GAME QUITS!
+00213  C16E                        
+00214  C16E                        ; @                 
+00215  C16E                        ; COLLISION MANAGEMENT BETWEEN LANDER AND PLATFORM
+00216  C16E                        ; $D01E
+00217  C16E                        ; BIT #X: 1 = SPRITE #X COLLIDED WITH ANOTHER SPRITE.
+00218  C16E                        ; @                 
+00219  C16E  A9 01      CONT01     LDA #%00000001
+00220  C170  2C 1E D0              BIT $D01E
+00221  C173  F0 18                 BEQ CONT02
+00222  C175  4C 78 C1              JMP LANDED
+00223  C178             
+00224  C178  A2 00      LANDED     LDX #0
+00225  C17A  BD E6 C2   DRAWOK     LDA LD_MSG,X    ; DIAPLY MESSAGE FOR LANDING
+00226  C17D  9D F1 05              STA $05F1,X
+00227  C180  A9 01                 LDA #1
+00228  C182  9D F1 D9              STA $D9F1,X
+00229  C185  E8                    INX
+00230  C186  E0 06                 CPX #6
+00231  C188  D0 F0                 BNE DRAWOK
+00232  C18A  4C 95 C2              JMP EXIT        ; GAME QUITS!
+00233  C18D             
+00234  C18D                        ;@ JOYSTICK MANAGEMENT. IF PROGRAM ARRIVES HERE, NO COLLISIONS ARE DETECTED. 
+00235  C18D             
+00236  C18D  AD AA C2   CONT02     LDA UP          ; MASK JOYSTICK UP MOVEMENT
+00237  C190  2C 00 DC              BIT $DC00       ; BITWISE AND WITH ADDRESS 56320
+00238  C193  D0 0A                 BNE CONT1       ; NO THRUST UP
+00239  C195  A9 13                 LDA #%00010011
+00240  C197  8D 15 D0              STA $D015
+00241  C19A  A9 FC                 LDA #-4
+00242  C19C  8D A0 C2              STA AY
+00243  C19F             
+00244  C19F  AD AB C2   CONT1      LDA DW          ; MASK JOYSTICK DOWN MOVEMENT
+00245  C1A2  2C 00 DC              BIT $DC00       ; BITWISE AND WITH ADDRESS 56320
+00246  C1A5  D0 05                 BNE CONT2       ; NO THRUST DOWN
+00247  C1A7  A9 02                 LDA #2
+00248  C1A9  8D A0 C2              STA AY
+00249  C1AC             
+00250  C1AC  AD AC C2   CONT2      LDA LF          ; MASK JOYSTICK LEFT MOVEMENT
+00251  C1AF  2C 00 DC              BIT $DC00       ; BITWISE AND WITH ADDRESS 56320
+00252  C1B2  D0 0A                 BNE CONT3       ; NO THRUST LEFT
+00253  C1B4  A9 19                 LDA #%00011001
+00254  C1B6  8D 15 D0              STA $D015
+00255  C1B9  A9 FF                 LDA #-1
+00256  C1BB  8D 9F C2              STA AX
+00257  C1BE             
+00258  C1BE  AD AD C2   CONT3      LDA RG          ; MASK JOYSTICK RIGHT MOVEMENT
+00259  C1C1  2C 00 DC              BIT $DC00       ; BITWISE AND WITH ADDRESS 56320
+00260  C1C4  D0 0A                 BNE CONT4       ; NO THRUST RIGHT
+00261  C1C6  A9 15                 LDA #%00010101
+00262  C1C8  8D 15 D0              STA $D015
+00263  C1CB  A9 01                 LDA #1
+00264  C1CD  8D 9F C2              STA AX
+00265  C1D0             
+00266  C1D0                        ;@ MANAGEMENT OF LANDER POSITION 
+00267  C1D0             
+00268  C1D0  18         CONT4      CLC
+00269  C1D1  AD A1 C2              LDA VX  ; VX = VX + AX * DT
+00270  C1D4  6D 9F C2              ADC AX
+00271  C1D7  8D A1 C2              STA VX
+00272  C1DA  2C 9F C2              BIT AX
+00273  C1DD  30 04                 BMI MIX
+00274  C1DF  A9 00                 LDA #0
+00275  C1E1  10 02                 BPL MIX2
+00276  C1E3  A9 FF      MIX        LDA #255
+00277  C1E5  6D A2 C2   MIX2       ADC VX+1
+00278  C1E8  8D A2 C2              STA VX+1
+00279  C1EB             
+00280  C1EB  18                    CLC
+00281  C1EC  AD A3 C2              LDA VY  ; VY = VY + AY * DT
+00282  C1EF  6D A0 C2              ADC AY
+00283  C1F2  8D A3 C2              STA VY
+00284  C1F5  2C A0 C2              BIT AY
+00285  C1F8  30 04                 BMI MIY
+00286  C1FA  A9 00                 LDA #0
+00287  C1FC  10 02                 BPL MIY2
+00288  C1FE  A9 FF      MIY        LDA #255
+00289  C200  6D A4 C2   MIY2       ADC VY+1
+00290  C203  8D A4 C2              STA VY+1
+00291  C206             
+00292  C206  18                    CLC
+00293  C207  AD A5 C2              LDA PXL  ; PX = PX + VX * DT
+00294  C20A  6D A1 C2              ADC VX
+00295  C20D  8D A5 C2              STA PXL
+00296  C210  AD 00 D0              LDA $D000
+00297  C213  6D A2 C2              ADC VX+1
+00298  C216  8D 00 D0              STA $D000 ; LANDER
+00299  C219  8D 02 D0              STA $D002 ; MAINENGINE
+00300  C21C  8D 04 D0              STA $D004 ; LEFT ROKET
+00301  C21F  8D 06 D0              STA $D006 ; RIGHT ROKET
+00302  C222                        
+00303  C222                        
+00304  C222  18                    CLC
+00305  C223  AD A6 C2              LDA PYL  ; PY = PY + VY * DT
+00306  C226  6D A3 C2              ADC VY
+00307  C229  8D A6 C2              STA PYL
+00308  C22C  AD 01 D0              LDA $D001
+00309  C22F  6D A4 C2              ADC VY+1
+00310  C232  8D 01 D0              STA $D001 ; LANDER
+00311  C235  8D 03 D0              STA $D003 ; MAINENGINE
+00312  C238  8D 05 D0              STA $D005 ; LEFT ROKET
+00313  C23B  8D 07 D0              STA $D007 ; RIGHT ROKET
+00314  C23E                        
+00315  C23E                        ;@ MANAGEMENT OF FUEL BAR 
+00316  C23E                        
+00317  C23E  AC A8 C2              LDY DECFLF
+00318  C241  88                    DEY
+00319  C242  8C A8 C2              STY DECFLF
+00320  C245  C0 00                 CPY #0
+00321  C247  D0 1B                 BNE ENDLOOP     ; DECREMENT FUEL BAR ONLY IF 'DECFLF' CYCLES GAME ARE PASSED,
+00322  C249  AC A7 C2              LDY DECFL
+00323  C24C  88                    DEY
+00324  C24D  C0 00                 CPY #0
+00325  C24F  F0 16                 BEQ ENDFUEL     ; DECREMENT FUEL BAR
+00326  C251  A9 A0                 LDA #160
+00327  C253  99 75 07              STA $0775,Y
+00328  C256  A9 00                 LDA #0
+00329  C258  99 75 DB              STA $DB75,Y
+00330  C25B  8C A7 C2              STY DECFL
+00331  C25E  AD A9 C2              LDA DECFLFBK    ; IF FUEL BAR HAS BEEN DECREMENTED, IT'S NEEDED TO RESTORE THE NUMBER OF CYCLES GAME
+00332  C261  8D A8 C2              STA DECFLF
+00333  C264                        
+00334  C264  4C 2B C1   ENDLOOP    JMP MAIN
+00335  C267             
+00336  C267                        ;@ IF FULE BAR IS OVER 
+00337  C267             
+00338  C267             ENDFUEL
+00339  C267  A9 11                 LDA #%00010001   ; DISABLE LANDER SPRITE FOR ENGINES
+00340  C269  8D 15 D0              STA $D015
+00341  C26C  A9 00                 LDA #%00000000   ; MAKE THE JOYSTICK NO LONGER AVAILABLE
+00342  C26E  8D AA C2              STA UP
+00343  C271  A9 00                 LDA #%00000000
+00344  C273  8D AB C2              STA DW
+00345  C276  A9 00                 LDA #%00000000
+00346  C278  8D AC C2              STA LF
+00347  C27B  A9 00                 LDA #%00000000
+00348  C27D  8D AD C2              STA RG
+00349  C280                        
+00350  C280  A2 00                 LDX #0
+00351  C282             DRAWENDFUEL 
+00352  C282  BD 0B C3              LDA ENDFUEL_MSG,X   ; DIAPLY MESSAGE FOR OUT OF FUEL
+00353  C285  9D F1 05              STA $05F1,X
+00354  C288  A9 01                 LDA #1
+00355  C28A  9D F1 D9              STA $D9F1,X
+00356  C28D  E8                    INX
+00357  C28E  E0 0F                 CPX #15
+00358  C290  D0 F0                 BNE DRAWENDFUEL
+00359  C292  4C 2B C1              JMP MAIN            ; IN CASE OF OUT OF FUEL, PROCESS GO BACK TO MAIN
+00360  C295                        ; TO SIMULATE THE LANDER PRECIPITARE
+00361  C295             
+00362  C295             
+00363  C295                        ;@ EXIT: GAME WAIT UNTIL THAT FIRE BUTTON IS PRESSED, THEN JUMP TO INIT
+00364  C295             EXIT       
+00365  C295  A9 10      RESTART    LDA #%00010000 ; MASK JOYSTICK BUTTON PUSH
+00366  C297  2C 00 DC              BIT $DC00      ; BITWISE AND WITH ADDRESS 56320
+00367  C29A  D0 F9                 BNE RESTART    ; BUTTON PRESSED -> CONTINUE
+00368  C29C  4C 00 C0              JMP INIT
+00369  C29F             
+00370  C29F                        ;@ VARIABLES        
+00371  C29F             
+00372  C29F  00         AX         BYTE 0
+00373  C2A0  00         AY         BYTE 0
+00374  C2A1  00         VX         BYTE 0
+00375  C2A2  00                    BYTE 0
+00376  C2A3  00         VY         BYTE 0
+00377  C2A4  00                    BYTE 0
+00378  C2A5  00         PXL        BYTE 0
+00379  C2A6  00         PYL        BYTE 0
+00380  C2A7  00         DECFL      BYTE 0          ; DECREMENT FLUEL
+00381  C2A8  00         DECFLF     BYTE 0          ; COUNTER OF GAME CYCLES
+00382  C2A9  00         DECFLFBK   BYTE 0          ; COUNTER OF GAME CYCLES BACKUP TO RESTORE THEM
+00383  C2AA             
+00384  C2AA  00         UP         BYTE 0          ; FOR JOISTICK MANAGEMENT
+00385  C2AB  00         DW         BYTE 0
+00386  C2AC  00         LF         BYTE 0
+00387  C2AD  00         RG         BYTE 0
+00388  C2AE             
+00389  C2AE                        ;@ STRINGS          
+00390  C2AE             
+00391  C2AE             WL_MSG     
+00392  C2AE  10 12 05              BYTE 16,18,5,19,19,32,6,9,18,5,32,20,15,32,19,20,11,18,20,32,12,1,14,4,9,14,7,33            ;PRESS FIRE TO START LANDING!
+00393  C2CA                        
+00394  C2CA             WL_MSG_BL  
+00395  C2CA  20 20 20              BYTE 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32     ;SPACE ROW
+00396  C2E6             
+00397  C2E6             LD_MSG     
+00398  C2E6  0C 01 0E              BYTE 12,1,14,4,5,4                                                          ;LANDED
+00399  C2EC             
+00400  C2EC             CR_MSG     
+00401  C2EC  03 12 01              BYTE 3,18,1,19,8,5,4,33,32,16,18,5,19,32,6,9,18,5,32,20,15,32,18,5,20,18,25 ;CRASHED
+00402  C307             
+00403  C307             FL_LAB     
+00404  C307  06 15 05              BYTE 6,21,5,12                                                              ;FUEL
+00405  C30B             
+00406  C30B             ENDFUEL_MSG 
+00407  C30B  12 15 0E              BYTE 18,21,14,32,1,21,20,32,15,6,32,6,21,5,12                               ;RUN OUT OF FUEL
+00408  C31A                        
+00409  C31A             
 
-******* 53 Label(s) *******
-ax = $C27F 
-ay = $C280 
-cont01 = $C15A 
-cont02 = $C179 
-cont1 = $C18A 
-cont2 = $C196 
-cont3 = $C1A7 
-cont4 = $C1B8 
-cr_msg = $C2B4 
-decfl = $C287 
-decflF = $C288 
-decflFBk = $C289 
-delWelcome = $C107 
-drawCr = $C147 
-drawEndFuel = $C262 
-drawfL = $C0CA 
-drawfLBar = $C0DC 
-drawOK = $C166 
-drawWlc = $C0EE 
-endFuel = $C24F 
-endFuel_msg = $C2BF 
-endLoop = $C24C 
-exit = $C275 
-fl_lab = $C2BB 
+******* 57 Label(s) *******
+ax = $C29F 
+ay = $C2A0 
+cont01 = $C16E 
+cont02 = $C18D 
+cont1 = $C19F 
+cont2 = $C1AC 
+cont3 = $C1BE 
+cont4 = $C1D0 
+cr_msg = $C2EC 
+decfl = $C2A7 
+decflF = $C2A8 
+decflFBk = $C2A9 
+delWelcome = $C11B 
+drawCr = $C15B 
+drawEndFuel = $C282 
+drawfL = $C0DE 
+drawfLBar = $C0F0 
+drawOK = $C17A 
+drawWlc = $C102 
+dw = $C2AB 
+endFuel = $C267 
+endFuel_msg = $C30B 
+endLoop = $C264 
+exit = $C295 
+fl_lab = $C307 
 init = $C000 
-landed = $C164 
-ld_msg = $C2AE 
-main = $C117 
-mix = $C1CB 
-mix2 = $C1CD 
-miy = $C1E6 
-miy2 = $C1E8 
-pxL = $C285 
-pyL = $C286 
-restart = $C275 
-row1 = $C04E 
-row1c = $C08E 
-row2 = $C058 
-row2c = $C098 
-row3 = $C062 
-row3c = $C0A2 
-row4 = $C06C 
-row4c = $C0AC 
-row5 = $C076 
-row5c = $C0B6 
-row6 = $C080 
-row6c = $C0C0 
-vx = $C281 
-vy = $C283 
-wait = $C119 
-welcome = $C0FE 
-wl_msg = $C28A 
-wl_msg_bl = $C29C 
+landed = $C178 
+ld_msg = $C2E6 
+lf = $C2AC 
+main = $C12B 
+mix = $C1E3 
+mix2 = $C1E5 
+miy = $C1FE 
+miy2 = $C200 
+pxL = $C2A5 
+pyL = $C2A6 
+restart = $C295 
+rg = $C2AD 
+row1 = $C062 
+row1c = $C0A2 
+row2 = $C06C 
+row2c = $C0AC 
+row3 = $C076 
+row3c = $C0B6 
+row4 = $C080 
+row4c = $C0C0 
+row5 = $C08A 
+row5c = $C0CA 
+row6 = $C094 
+row6c = $C0D4 
+up = $C2AA 
+vx = $C2A1 
+vy = $C2A3 
+wait = $C12D 
+welcome = $C112 
+wl_msg = $C2AE 
+wl_msg_bl = $C2CA 
 
 ******* 0 Unused label(s) *******
 

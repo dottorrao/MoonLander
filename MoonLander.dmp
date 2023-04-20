@@ -37,7 +37,7 @@
 00037  C045  A9 01                 LDA #1          ; $00 = WHITE
 00038  C047  8D 86 02              STA $0286       ; TEXT COLOR SET TO WHITE
 00039  C04A             
-00040  C04A  A9 01                 LDA #%00000001  ; THESE VARIABLES ARE USED FOR JOYSTICK MANAGEMENT
+00040  C04A  A9 01                 LDA #%00000001  ;  THESE VARIABLES ARE USED FOR JOYSTICK MANAGEMENT
 00041  C04C  8D AA C2              STA UP          ;  USING THESE VARIABLES, IT'S POSSIBLE TO DEACTIVATE JOYSTICK
 00042  C04F  A9 02                 LDA #%00000010  ;  WHEN FUEL IS OVER
 00043  C051  8D AB C2              STA DW
@@ -45,7 +45,7 @@
 00045  C056  8D AC C2              STA LF
 00046  C059  A9 08                 LDA #%00001000
 00047  C05B  8D AD C2              STA RG
-00048  C05E                        
+00048  C05E             
 00049  C05E                        ;@ THIS SECTION OF CODE IS TO GENERATE THE BOTTOM PART OF LANDSCAPE 
 00050  C05E                        
 00051  C05E  A9 A0                 LDA #160        ; CHARS AND COLOUR ARE SET CHARS BY CHARS
@@ -128,7 +128,7 @@
 00128  C0DA  D0 F8                 BNE ROW6C
 00129  C0DC                        
 00130  C0DC  A2 00                 LDX #0
-00131  C0DE  BD DF C2   DRAWFL     LDA FL_LAB,X    ; DROW OF FUEL LABEL
+00131  C0DE  BD 07 C3   DRAWFL     LDA FL_LAB,X    ; DROW OF FUEL LABEL
 00132  C0E1  9D 70 07              STA $0770,X
 00133  C0E4  A9 01                 LDA #1
 00134  C0E6  9D 70 DB              STA $DB70,X
@@ -149,12 +149,12 @@
 00149  C100                        
 00150  C100                        
 00151  C100  A2 00                 LDX #0
-00152  C102  BD AE C2   DRAWWLC    LDA WL_MSG,X   ; DIAPLY MESSAGE "PRESS BUTTON TO START"
-00153  C105  9D F1 05              STA $05F1,X
+00152  C102  BD AE C2   DRAWWLC    LDA WL_MSG,X   ; DISPLY MESSAGE "PRESS BUTTON TO START"
+00153  C105  9D 28 04              STA $0428,X
 00154  C108  A9 01                 LDA #1
-00155  C10A  9D F1 D9              STA $D9F1,X
+00155  C10A  9D 28 D8              STA $D828,X
 00156  C10D  E8                    INX
-00157  C10E  E0 12                 CPX #18
+00157  C10E  E0 20                 CPX #32
 00158  C110  D0 F0                 BNE DRAWWLC
 00159  C112             
 00160  C112  A9 10      WELCOME    LDA #%00010000 ; MASK JOYSTICK BUTTON PUSH
@@ -163,12 +163,12 @@
 00163  C119             
 00164  C119  A2 00                 LDX #0
 00165  C11B             DELWELCOME 
-00166  C11B  BD C0 C2              LDA WL_MSG_BL,X ; DELETE WELCOME MESSAGE
-00167  C11E  9D F1 05              STA $05F1,X
+00166  C11B  BD CA C2              LDA WL_MSG_BL,X ; DELETE WELCOME MESSAGE
+00167  C11E  9D 28 04              STA $0428,X
 00168  C121  A9 01                 LDA #1
-00169  C123  9D F1 D9              STA $D9F1,X
+00169  C123  9D 28 D8              STA $D828,X
 00170  C126  E8                    INX
-00171  C127  E0 12                 CPX #18
+00171  C127  E0 20                 CPX #32
 00172  C129  D0 F0                 BNE DELWELCOME
 00173  C12B             
 00174  C12B                        ;@ MAIN LOOP        
@@ -202,12 +202,12 @@
 00202  C153  AD 01 D0              LDA $D001
 00203  C156  8D 0B D0              STA $D00B
 00204  C159  A2 00                 LDX #0
-00205  C15B  BD D8 C2   DRAWCR     LDA CR_MSG,X    ; DIAPLY MESSAGE FOR CRASH
-00206  C15E  9D F1 05              STA $05F1,X
+00205  C15B  BD EC C2   DRAWCR     LDA CR_MSG,X    ; DIAPLY MESSAGE FOR CRASH
+00206  C15E  9D 32 04              STA $0432,X
 00207  C161  A9 01                 LDA #1
-00208  C163  9D F1 D9              STA $D9F1,X
+00208  C163  9D 32 D8              STA $D832,X
 00209  C166  E8                    INX
-00210  C167  E0 07                 CPX #7
+00210  C167  E0 1B                 CPX #27
 00211  C169  D0 F0                 BNE DRAWCR
 00212  C16B  4C 95 C2              JMP EXIT         ; GAME QUITS!
 00213  C16E                        
@@ -222,7 +222,7 @@
 00222  C175  4C 78 C1              JMP LANDED
 00223  C178             
 00224  C178  A2 00      LANDED     LDX #0
-00225  C17A  BD D2 C2   DRAWOK     LDA LD_MSG,X    ; DIAPLY MESSAGE FOR LANDING
+00225  C17A  BD E6 C2   DRAWOK     LDA LD_MSG,X    ; DIAPLY MESSAGE FOR LANDING
 00226  C17D  9D F1 05              STA $05F1,X
 00227  C180  A9 01                 LDA #1
 00228  C182  9D F1 D9              STA $D9F1,X
@@ -349,7 +349,7 @@
 00349  C280                        
 00350  C280  A2 00                 LDX #0
 00351  C282             DRAWENDFUEL 
-00352  C282  BD E3 C2              LDA ENDFUEL_MSG,X   ; DIAPLY MESSAGE FOR OUT OF FUEL
+00352  C282  BD 0B C3              LDA ENDFUEL_MSG,X   ; DIAPLY MESSAGE FOR OUT OF FUEL
 00353  C285  9D F1 05              STA $05F1,X
 00354  C288  A9 01                 LDA #1
 00355  C28A  9D F1 D9              STA $D9F1,X
@@ -379,7 +379,7 @@
 00379  C2A6  00         PYL        BYTE 0
 00380  C2A7  00         DECFL      BYTE 0          ; DECREMENT FLUEL
 00381  C2A8  00         DECFLF     BYTE 0          ; COUNTER OF GAME CYCLES
-00382  C2A9  00         DECFLFBK   BYTE 0         ; COUNTER OF GAME CYCLES BACKUP TO RESTORE THEM
+00382  C2A9  00         DECFLFBK   BYTE 0          ; COUNTER OF GAME CYCLES BACKUP TO RESTORE THEM
 00383  C2AA             
 00384  C2AA  00         UP         BYTE 0          ; FOR JOISTICK MANAGEMENT
 00385  C2AB  00         DW         BYTE 0
@@ -389,24 +389,24 @@
 00389  C2AE                        ;@ STRINGS          
 00390  C2AE             
 00391  C2AE             WL_MSG     
-00392  C2AE  10 12 05              BYTE 16,18,5,19,19,32,6,9,18,5,32,20,15,32,12,1,14,4            ;PRESS FIRE TO LAND
-00393  C2C0             
-00394  C2C0             WL_MSG_BL  
-00395  C2C0  20 20 20              BYTE 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32      ;SPACE ROW
-00396  C2D2             
-00397  C2D2             LD_MSG     
-00398  C2D2  0C 01 0E              BYTE 12,1,14,4,5,4                                              ; LANDED
-00399  C2D8             
-00400  C2D8             CR_MSG     
-00401  C2D8  03 12 01              BYTE 3,18,1,19,8,5,4                                            ; CRASHED
-00402  C2DF             
-00403  C2DF             FL_LAB     
-00404  C2DF  06 15 05              BYTE 6,21,5,12                                                  ; FUEL
-00405  C2E3             
-00406  C2E3             ENDFUEL_MSG 
-00407  C2E3  12 15 0E              BYTE 18,21,14,32,1,21,20,32,15,6,32,6,21,5,12                   ; RUN OUT OF FUEL
-00408  C2F2                        
-00409  C2F2             
+00392  C2AE  10 12 05              BYTE 16,18,5,19,19,32,6,9,18,5,32,20,15,32,19,20,11,18,20,32,12,1,14,4,9,14,7,33            ;PRESS FIRE TO START LANDING!
+00393  C2CA                        
+00394  C2CA             WL_MSG_BL  
+00395  C2CA  20 20 20              BYTE 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32     ;SPACE ROW
+00396  C2E6             
+00397  C2E6             LD_MSG     
+00398  C2E6  0C 01 0E              BYTE 12,1,14,4,5,4                                                          ;LANDED
+00399  C2EC             
+00400  C2EC             CR_MSG     
+00401  C2EC  03 12 01              BYTE 3,18,1,19,8,5,4,33,32,16,18,5,19,32,6,9,18,5,32,20,15,32,18,5,20,18,25 ;CRASHED
+00402  C307             
+00403  C307             FL_LAB     
+00404  C307  06 15 05              BYTE 6,21,5,12                                                              ;FUEL
+00405  C30B             
+00406  C30B             ENDFUEL_MSG 
+00407  C30B  12 15 0E              BYTE 18,21,14,32,1,21,20,32,15,6,32,6,21,5,12                               ;RUN OUT OF FUEL
+00408  C31A                        
+00409  C31A             
 
 ******* 57 Label(s) *******
 ax = $C29F 
@@ -417,7 +417,7 @@ cont1 = $C19F
 cont2 = $C1AC 
 cont3 = $C1BE 
 cont4 = $C1D0 
-cr_msg = $C2D8 
+cr_msg = $C2EC 
 decfl = $C2A7 
 decflF = $C2A8 
 decflFBk = $C2A9 
@@ -430,13 +430,13 @@ drawOK = $C17A
 drawWlc = $C102 
 dw = $C2AB 
 endFuel = $C267 
-endFuel_msg = $C2E3 
+endFuel_msg = $C30B 
 endLoop = $C264 
 exit = $C295 
-fl_lab = $C2DF 
+fl_lab = $C307 
 init = $C000 
 landed = $C178 
-ld_msg = $C2D2 
+ld_msg = $C2E6 
 lf = $C2AC 
 main = $C12B 
 mix = $C1E3 
@@ -465,7 +465,7 @@ vy = $C2A3
 wait = $C12D 
 welcome = $C112 
 wl_msg = $C2AE 
-wl_msg_bl = $C2C0 
+wl_msg_bl = $C2CA 
 
 ******* 0 Unused label(s) *******
 
